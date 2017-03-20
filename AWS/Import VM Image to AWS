@@ -22,7 +22,6 @@
 
    
                Description:  Name of image you are importing  IE: "VZ Sandbox Linux RHEL6 OVA"
-
                S3Key:  Name of templates .ova file (file you copied up to S3 bucket)  IE: aws_sandbox_rhel6_template.ova
 
           Here is an example output from the import-image command.
