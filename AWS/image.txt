@@ -1,0 +1,155 @@
+
+
+   1.  Create an OVA file from an ESX template. Save or copy the OVA file to you PC.
+
+   2.  Login to the AWS portal ( Account info )
+
+         On the front AWS page in the "Storage & Content Delivery" section:
+
+           - Select the S3 service.
+
+           - In the S3 bucket, select the "vz-sandbox-images" directory.
+
+           - Select "Actions --> Upload" and a new window will be launched.
+
+           - Select "Add Files" and an explorer window will be launched.
+
+           - Navigate to and select the OVA file(s)
+
+           - From the "Upload" window select "Start Upload".
+
+   3.  Once the image has been copied to the AWS S3 bucket, you have to run the import-image command via the AWSCLI utility.
+
+        On the pc with the AWSCLI utility, start a command prompt and issue the following commands.
+
+ 
+
+                cd C:\program files\Amazon\AWSCLI
+
+                aws ec2 import-image --cli-input-json "{  \"Description\": \"VZ Sandbox Linux RHEL6 OVA\", \"DiskContainers\": [ { \"Description\": \"First CLI task\", \"UserBucket\": { \"S3Bucket\": \"vz-sandbox-images\", \"S3Key\" : \"aws_sandbox_rhel6_template.ova\" } } ]}"
+
+    
+
+               Description:  Name of image you are importing  IE: "VZ Sandbox Linux RHEL6 OVA"
+
+               S3Key:  Name of templates .ova file (file you copied up to S3 bucket)  IE: aws_sandbox_rhel6_template.ova
+
+ 
+
+         Here is an example output from the import-image command.
+
+            {
+
+                "Status": "active",
+
+                "Description": "VZ Sandbox Windows 2012R2 OVA",
+
+                "Progress": "2",
+
+                "SnapshotDetails": [
+
+                    {
+
+                        "UserBucket": {
+
+                            "S3Bucket": "vz-sandbox-images",
+
+                            "S3Key": "aws_sandbox_windows2012r2_template.ova"
+
+                        },
+
+                        "DiskImageSize": 0.0
+
+                    }
+
+                ],
+
+                "StatusMessage": "pending",
+
+                "ImportTaskId": "import-ami-fhb82vmc"
+
+            }
+
+ 
+
+             Note: The ImportTaskId will be needed if you want to review the status of the import.
+
+ 
+
+   To monitor the status of the import-image job, use the following AWSCLI command.
+
+ 
+
+                aws ec2 describe-import-image-tasks --cli-input-json "{ \"ImportTaskIds\": [\"import-ami-ffzmgbdc\"], \"NextToken\": \"abc\", \"MaxResults\": 10 } "
+
+ 
+
+                        ImportTaskIds:  The import-ami-ID can be found in the output from the import-image command.
+
+ 
+
+       Here is an example output from the describe-import-image-tasks command. Job "Progress" will show "complete" once finished.
+
+ 
+
+            {
+
+                "ImportImageTasks": [
+
+                    {
+
+                        "Status": "active",
+
+                        "Description": "VZ Sandbox Windows 2012R2 OVA",
+
+                        "Progress": "39",
+
+                        "SnapshotDetails": [
+
+                            {
+
+                                "UserBucket": {
+
+                                    "S3Bucket": "vz-sandbox-images",
+
+                                    "S3Key": "aws_sandbox_windows2012r2_template.ova"
+
+                                },
+
+                                "DiskImageSize": 10293606912.0,
+
+                                "Format": "VMDK"
+
+                            }
+
+                        ],
+
+                        "StatusMessage": "updating",
+
+                        "ImportTaskId": "import-ami-fhb82vmc"
+
+                    }
+
+                ]
+
+            }
+
+ 
+
+To find out the AMI ID property to use when creating an instance, login to the AWS portal and navigate to the following location.
+
+ 
+
+           -  Login to the AWS portal ( Account info )
+
+         From the front AWS page in the "Compute" section:
+
+           - Select the EC2 service.
+
+           - Select "AMIs" in the Images section.
+
+           - Select the AMI Name from the import and you'll find the AMI ID.
+
+ 
+
+Make sure you document the AMI ID for this import because it is required if you want to use this image in an API start instance call.
