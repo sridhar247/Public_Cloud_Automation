@@ -1,0 +1,73 @@
+AWS Aurora (Managed Service)
+
+Generally DB's are a Monolitic stack with multiple layers of functionality - SQL Processing Layer, Transational, Caching and Logging. 
+
+Different Clustering - Sharding
+- Partition your data, Put them in different instances, You create a cluster and the application essentially figures out which particular shard to go to. The coupling is happening at the application later
+
+- Shared nothing - Galera, Where couling is happning at the SQL layers
+- Shared Disk (Oracle RAC)- Coupling at the caching and the storage layer
+
+Same monolitc stack but different designs...
+
+Scale out, Distribute and multi-tenent architecture - Logging layer and storage layer and distributed across AZ's - distributed scaleout and multi-tenent, Storage Layer is distributed across 3 AZ's stripped across 100 storage nodes, Its a purpose based storage later where the interface between the DB engine is not any standard storage  protocol like iscsi, fibre chanel or NFS, iTS A db INTEFACE, THEY send redo log from the DB engine to the storage layer...
+
+Automate Admin Tasks
+- Schema Design, Query construction, query optimization
+
+- Automatic failover, Backup and recovery, Isolation and security, industry compliance, push button scaling, automated patching, advanced monitoing and routine maitenance. 
+
+Aurora is a Drop-in compatability with MySQL
+
+1/10 the cost of commercial DB, Well integrated with AWS ecosystem, 5x times faster
+
+sysbench performance (5.6 & 5.7) [ Benchmark performance] - Write Performance and Read performance 
+120,000 w/s (32 cores/244gb - R3.8Xlarge); 600,000 r/s
+
+Scaling - With User COnnections (50 connection, 500conenction, 5000 conenctions), With no of Tables (10, 100, 1000), With DB Size  (1GB, 10GB..Upto 1TB)
+
+TPCC Performance Bench Mark (db SIZE) - (WITH 30K IOPS)
+
+Another Benchmark
+
+Sysbench - 30 min run
+Aurora - 27,378K transactions & Average 0.95 I/O's per transaction (6x amplification)
+MySQL - 780K transations & 7388K I/O per Million Transations (excludes mirrring and standby), Average 7.4 i/o per transaction. 
+
+
+NoSQL to Aurora - I/O Cost in Aurora is much lower, 
+
+
+AWS RDS Pricing
+DB Instance Class - Priced per hour depending on the instance type
+Storage Rate - $0.100 per GB/month
+I/O rate - $0.200 per 1 million requests
+Data Transfer - is based on data transferred “in” and “out” of Amazon RDS.
+
+Storage consumed by your Aurora database is billed in per GB-month increments and IOs consumed are billed in per million request increments. You pay only for the storage and IOs your Aurora database consumes and do not need to provision in advance.
+
+
+
+
+
+
+Why choose Amazon Aurora over MySQL RDS or PostgreSQL RDS?
+Firstly, Amazon’s RDS is a tool that handles provisioning, patching, backup, recovery, failure detection and repair of your relational database. This leaves you with more time to concentrate on your data. 
+
+Amazon claims to have some very decent measures put in place to ensure that Aurora suffers no breakdowns or problems around the clock. Firstly you can create up to 15 replicas, which increases throughput and is more than enough failover targets. These replicas share storage with the primary instance which almost eliminates the lag in replication (reports of a tiny lag, around 10-20 milliseconds due to page caching in the replicas). According to amazon recovery from physical storage failures is transparent and it usually takes less than a minute for an instance to restart.  
+
+
+Built in high availability comes as standard, data is replicated to 3 availability zones, with two copies of data in each zone. These measures are designed to give Aurora greater than 99.99% availability, and also data is backed up continuously to Amazon S3. Aurora’s availability, scalability, and durability are advantages over MySQL RDS and PostgreSQL. You could even say Aurora increases MySQL performance and availability as the Aurora database engine is closely integrated with an SSD-backed virtualized storage layer which is designed for database workloads.With MySQL and PostgreSQL with RDS you can choose from General Purpose (SSD) storage, Provisioned IOPS (SSD) storage, or magnetic storage.
+
+ 
+
+
+
+
+
+
+
+
+
+
+
