@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     # mention your tag values below example "Backup-snap"
     reservations = ec.describe_instances(
         Filters=[
-            {'Name': 'tag-key', 'Values': ['jitrbackup', 'weekly']},
+            {'Name': 'tag-key', 'Values': ['backup', 'weekly']},
         ]
     ).get(
         'Reservations', []
