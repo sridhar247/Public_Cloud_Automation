@@ -1,0 +1,102 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "App A Resources",
+
+"Parameters" : {
+    "InstanceSize": {
+      "Description" : "Size of instance to launch",
+      "Type": "String"
+    },
+    "PublicSubnetId": {
+      "Description" : "Id of public subnet",
+      "Type": "String"
+    },
+    "PrivateSubnetId": {
+      "Description" : "Id of private subnet",
+      "Type": "String"
+    }
+
+},
+
+"Mappings" : {
+    "RegionMap" : {
+      "us-east-1" : {"ami" : "ami-60b6c60a" },
+      "us-west-1" : {"ami" : "ami-f0091d91" },
+      "eu-west-1" : {"ami" : "ami-bff32ccc" }
+    }
+  },
+
+  
+"Resources" : {
+
+    "PublicInstance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "InstanceType" : { "Ref" : "InstanceSize" },
+        "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "ami"]},
+        "NetworkInterfaces" : [{
+          "GroupSet"                 : [{ "Ref" : "EC2SecurityGroup" }],
+          "AssociatePublicIpAddress" : "true",
+          "DeviceIndex"              : "0",
+          "DeleteOnTermination"      : "true",
+          "SubnetId"                 : { "Ref" : "PublicSubnetId" }
+        }]
+      }
+    },
+    
+      "PrivateInstance" : {
+      "Type" : "AWS::EC2::Instance",
+
+      "Properties" : {
+        "InstanceType" : { "Ref" : "InstanceSize" },
+        "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "ami"]},
+
+        "NetworkInterfaces" : [{
+          "GroupSet"                 : [{ "Ref" : "EC2SecurityGroup" }],
+          "AssociatePublicIpAddress" : "true",
+          "DeviceIndex"              : "0",
+          "DeleteOnTermination"      : "true",
+          "SubnetId"                 : { "Ref" : "PrivateSubnetId" }
+        }]
+      }
+    },
+ 
+
+    "EC2SecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable access to the EC2 host",
+        "VpcId" : "vpc-80e965e4",
+        "SecurityGroupIngress" : [
+        { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0" },
+        { "IpProtocol" : "icmp", "FromPort" : "-1",  "ToPort" : "-1",  "CidrIp" : "0.0.0.0/0" }
+        ]
+      }
+    },
+   "SGBaseIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": { "Ref": "EC2SecurityGroup" },
+        "IpProtocol": "tcp",
+        "FromPort": "80",
+        "ToPort": "80",
+        "SourceSecurityGroupId": { "Ref": "EC2SecurityGroup" }
+      }
+      }
+    },
+  "Outputs" : {
+    "pubIpAddress1" : {
+    "Description" : "Public ip address of public instance",
+    "Value" : { "Fn::GetAtt" : [ "PublicInstance", "PublicIp" ] }
+    },
+     "privIpAddress1" : {
+    "Description" : "Public ip address of public instance",
+    "Value" : { "Fn::GetAtt" : [ "PublicInstance", "PrivateIp" ] }
+    },
+      "privIpAddress2" : {
+    "Description" : "Public ip address of public instance",
+    "Value" : { "Fn::GetAtt" : [ "PrivateInstance", "PrivateIp" ] }
+    }    
+  }
+}
